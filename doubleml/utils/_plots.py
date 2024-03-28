@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 import plotly.graph_objects as go
 
 
@@ -80,3 +82,59 @@ def _sensitivity_contour_plot(x,
     fig.update_yaxes(range=[0, np.max(y)])
 
     return fig
+
+
+
+def _sensitivity_contour_plot_static(x,
+                              y,
+                              contour_values,
+                              unadjusted_value,
+                              scenario_x,
+                              scenario_y,
+                              scenario_value,
+                              include_scenario,
+                              benchmarks=None,
+                              fill=True):
+    
+    X, Y = np.meshgrid(x, y)
+    Z = np.reshape(contour_values, X.shape)
+
+    fig, ax = plt.subplots(figsize=(6, 6))  # Create a square figure
+
+    # create contour plot
+    CS = ax.contour(X, Y, Z, colors='black')
+
+    # # find zero level
+    # zero_level = np.where(np.isclose(CS.levels, 0))[0][0]
+    # print(zero_level)
+
+    # # change zero contour line to be red and thicker
+    # CS.collections[zero_level].set_color('red')
+    # CS.collections[zero_level].set_linewidth(2)
+    # CS.collections[zero_level].set_linestyle('dotted')
+
+    ax.clabel(CS, inline=1, fontsize=10)
+
+    if include_scenario:
+        ax.plot(scenario_x, scenario_y, 'ro')  # Red dot
+        ax.text(scenario_x, scenario_y, 'Scenario', color='red')
+
+
+    # add unadjusted
+    ax.plot(0, 0, '^', markersize=8, markerfacecolor='black', markeredgecolor='black')  # Diamond marker
+    ax.text(0+0.004, 0+0.004, "Unadj.", color='black', fontweight='bold', 
+    bbox=dict(facecolor='white', edgecolor='white', boxstyle='round,pad=0.2', linewidth=0.5), zorder=5)
+
+    if benchmarks is not None:
+        for bench_x, bench_y, bench_name in zip(benchmarks['cf_d'], benchmarks['cf_y'], benchmarks['name']):
+            ax.plot(bench_x, bench_y, 'D', markersize=8, markerfacecolor='red', markeredgecolor='black')  # Diamond marker
+            ax.text(bench_x+0.004, bench_y+0.004, bench_name, color='black', fontweight='bold', 
+                bbox=dict(facecolor='white', edgecolor='white', boxstyle='round,pad=0.2', linewidth=0.5), zorder=5)
+
+    ax.set_title('Contour Plot')
+    ax.set_xlabel('Partial R2 of unobs. confounder(s) with the treatment')
+    ax.set_ylabel('Partial R2 of unobs. confounder(s) with the outcome')
+    ax.set_xlim([-0.005, np.max(x)])
+    ax.set_ylim([-0.005, np.max(y)])
+
+    plt.show()

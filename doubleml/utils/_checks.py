@@ -216,9 +216,9 @@ def _check_benchmarks(benchmarks):
                              f'Got {str(benchmarks.keys())}.')
 
         value_lengths = [len(value) for value in benchmarks.values()]
-        if not len(set(value_lengths)) == 1:
-            raise ValueError('benchmarks has to be a dictionary with values of same length. '
-                             f'Got {str(value_lengths)}.')
+        # if not len(set(value_lengths)) == 1:
+        #     raise ValueError('benchmarks has to be a dictionary with values of same length. '
+        #                      f'Got {str(value_lengths)}.')
         for i in (range(value_lengths[0])):
             for key in ['cf_y', 'cf_d']:
                 _check_in_zero_one(benchmarks[key][i], f"benchmarks {key}", include_zero=True, include_one=False)

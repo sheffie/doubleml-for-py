@@ -18,7 +18,7 @@ from .utils.resampling import DoubleMLResampling, DoubleMLClusterResampling
 from .utils._estimation import _draw_weights, _rmse, _aggregate_coefs_and_ses, _var_est, _set_external_predictions
 from .utils._checks import _check_in_zero_one, _check_integer, _check_float, _check_bool, _check_is_partition, \
     _check_all_smpls, _check_smpl_split, _check_smpl_split_tpl, _check_benchmarks, _check_external_predictions
-from .utils._plots import _sensitivity_contour_plot
+from .utils._plots import _sensitivity_contour_plot_static
 from .utils.gain_statistics import gain_statistics
 
 _implemented_data_backends = ['DoubleMLData', 'DoubleMLClusterData']
@@ -1667,7 +1667,7 @@ class DoubleML(ABC):
         return res
 
     def sensitivity_plot(self, idx_treatment=0, value='theta', include_scenario=True, benchmarks=None,
-                         fill=True, grid_bounds=(0.15, 0.15), grid_size=100):
+                         fill=True, grid_bounds=(0.2, 0.2), grid_size=100):
         """
         Contour plot of the sensivity with respect to latent/confounding variables.
 
@@ -1719,7 +1719,7 @@ class DoubleML(ABC):
             raise ValueError('Invalid value ' + value + '. ' +
                              'Valid values ' + ' or '.join(valid_values) + '.')
         _check_bool(include_scenario, 'include_scenario')
-        _check_benchmarks(benchmarks)
+        # _check_benchmarks(benchmarks)
         _check_bool(fill, 'fill')
         _check_in_zero_one(grid_bounds[0], "grid_bounds", include_zero=False, include_one=False)
         _check_in_zero_one(grid_bounds[1], "grid_bounds", include_zero=False, include_one=False)
@@ -1767,7 +1767,7 @@ class DoubleML(ABC):
                                                                   level=self.sensitivity_params['input']['level'])
                 benchmark_values[benchmark_idx] = sens_dict_bench[value][bound][idx_treatment]
             benchmark_dict['value'] = benchmark_values
-        fig = _sensitivity_contour_plot(x=cf_d_vec,
+        fig = _sensitivity_contour_plot_static(x=cf_d_vec,
                                         y=cf_y_vec,
                                         contour_values=contour_values,
                                         unadjusted_value=unadjusted_value,
